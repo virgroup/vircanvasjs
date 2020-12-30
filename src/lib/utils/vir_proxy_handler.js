@@ -12,7 +12,7 @@ function _invariant(property, action) {
     return true;
 }
 
-export default function(){
+function virProxyHandler(){
     return {
         apply: function(target, self, args){
             var r = null;
@@ -180,3 +180,5 @@ export default function(){
 
     };
 };
+
+export default virProxyHandler;
