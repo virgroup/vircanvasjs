@@ -18,4 +18,4 @@ class VirAbstractClass{
     }
 }
 
-export default VirAbstract;
+export default VirAbstractClass;
