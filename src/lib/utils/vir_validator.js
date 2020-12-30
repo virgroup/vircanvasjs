@@ -1,7 +1,7 @@
 "use strict";
 
-import "./vir_is_strict_object";
-import "./vir_in_types";
+import virIsStrictObject from "./vir_is_strict_object";
+import virInTypes from "./vir_in_types";
 
 /**
  * 
