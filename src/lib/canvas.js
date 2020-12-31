@@ -2,7 +2,7 @@
  * Canvas class
  */
 
-import { proxyHandler, validator, isStrictObject } from "./utils";
+import { proxyHandler, validator, isStrictObject, hasTypes } from "./utils";
 
 export default class Canvas{
     // PRIVATE PARAMETERS
@@ -10,13 +10,15 @@ export default class Canvas{
         container: {
             type: String,
             require: true,
+            mutable: false,
             validator: function(value){
                 return value[0] !== "#";    
-            }
+            },
         },
         height: {
             type: [Number, Function, String],
             default: 500,
+            mutable: false,
             validator: function(value){
                 var type = typeof value;
                 if(type === "function") value = value();
@@ -36,6 +38,7 @@ export default class Canvas{
         width: {
             type: [Number, Function, String],
             default: "100%",
+            mutable: false,
             validator: function(value){
                 var type = typeof value;
                 if(type === "function") value = value();
@@ -57,8 +60,63 @@ export default class Canvas{
 
     _options = {};
 
-    // PUBLIC PARAMETERS
-    
+    _data = {};
+
+    // PROXY METHODS
+    _get(property){
+        var value = undefined;
+
+        if(this._options.hasOwnProperty(property)){
+            value = this._options[property].value;
+        }else if(this._data.hasOwnProperty(property)){
+            value = this._data[property];
+        }
+
+        return value;
+    }
+
+    _set(property, value){
+        var result = undefined;
+
+        if(this._options.hasOwnProperty(property)){
+            if(this._options[property].mutable){
+                if(hasTypes(value, this._options[property].type)){
+                    if(this._options[property].validator){
+                        result = this._options[property] = value;
+                    }else{
+                        throw new Error("value is invalid value");
+                    }
+                }else{
+                    throw new TypeError("value has invalid type");
+                }
+            }else{
+                throw new Error("Can't set imutable property");
+            }
+        }else{
+            result = this._data[property] = value;
+        }
+
+        return result;
+    }
+
+    _has(property){
+        return this._data.hasOwnProperty(property) || this._options.hasOwnProperty(property);
+    }
+
+    _ownKeys(){
+        return Object.getOwnPropertyNames(this._options).concat(Object.getOwnPropertyNames(this._data));
+    }
+
+    _delete(property){
+        var result = false;
+
+        if(this._data.hasOwnProperty(property)){
+            result = delete this._data[property];
+        }
+
+        return result;
+    }
+
     /**
      * 
      * @constructor
