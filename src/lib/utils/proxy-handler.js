@@ -64,9 +64,13 @@ export function proxyHandler(){
             
             if(valid){
                 if(typeof target._get === "function"){
-                    r = target._get(property);
+                    r = target._get(property)
                 }else if(property in target){
                     r = target[property];
+                }
+
+                if(typeof r === "function"){
+                    r = r.bind(target);
                 }
             }
             
