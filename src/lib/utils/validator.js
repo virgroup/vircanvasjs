@@ -27,6 +27,7 @@ export function validator(data, validator, _throw=false){
             value = {
                 value: undefined,
                 type: undefined,
+                mutable: true,
                 validator: (value) => true,
             };
 
@@ -74,10 +75,11 @@ export function validator(data, validator, _throw=false){
                         value.type = null;
                     }else{
                         value.type = des.hasOwnProperty('type') ? des.type : null;
+                        if(typeof des.mutable === "boolean") value.mutable = des.mutable;
 
                         if(data.hasOwnProperty(key)){
                             in_type = hasTypes(data[key], value.type);
-                            if(in_type){
+                            if(in_type){                                
                                 if(typeof des.validator === "function"){
                                     if(des.validator(data[key])){
                                         value.value = data[key];
