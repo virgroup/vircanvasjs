@@ -4,7 +4,7 @@
 
 import { proxyHandler, validator, isStrictObject, hasTypes } from "./utils";
 
-export default class Canvas{
+export class Canvas{
     // PRIVATE PARAMETERS
     _options_validations = {
         container: {
@@ -21,8 +21,12 @@ export default class Canvas{
             mutable: false,
             validator: function(value){
                 var type = typeof value;
-                if(type === "function") value = value();
-                else if(type === "string"){
+                if(type === "function") {
+                    value = value();
+                    type = typeof value;
+                }
+                
+                if(type === "string"){
                     value = value.split("%");
 
                     if(value.length === 2 && value[1] === ""){
@@ -41,8 +45,12 @@ export default class Canvas{
             mutable: false,
             validator: function(value){
                 var type = typeof value;
-                if(type === "function") value = value();
-                else if(type === "string"){
+                if(type === "function") {
+                    value = value();
+                    type = typeof value;
+                }
+
+                if(type === "string"){
                     value = value.split("%");
 
                     if(value.length === 2 && value[1] === ""){
@@ -62,6 +70,12 @@ export default class Canvas{
 
     _data = {};
 
+    _initilized = false;
+
+    _container = null;
+    
+    _context = null;
+
     // PROXY METHODS
     _get(property){
         var value = undefined;
@@ -70,6 +84,8 @@ export default class Canvas{
             value = this._options[property].value;
         }else if(this._data.hasOwnProperty(property)){
             value = this._data[property];
+        }else if(typeof this[property] === "function"){
+            value = this[property];
         }
 
         return value;
@@ -117,6 +133,68 @@ export default class Canvas{
         return result;
     }
 
+    
+    _size(container, height, width){
+        var th = typeof height;
+        var tw = typeof width;
+        
+        if(th === "function"){
+            height = height();
+            th = typeof height;
+        }
+
+        if(tw === "function"){
+            width = width();
+            tw = typeof width;
+        }
+
+        if(th === "string"){
+            height = height.split("%");
+
+            if(height.length === 2 && height[1] === ""){
+                height = Number(height[0]) * container.clientHeight / 100;
+            }else{
+                height = 0;
+            }
+        }
+        
+        if(tw === "string"){
+            width = width.split("%");
+
+            if(width.length === 2 && width[1] === ""){
+                width = Number(width[0]) * container.clientWidth / 100;
+            }else{
+                width = 0;
+            }
+        }
+
+        console.log(height, width);
+        
+        return {height: height > 0 ? height : 0, width: width > 0 ? width : 0};
+    }
+    _init(){
+        var container;
+        var canvas;
+        var context;
+        var size;
+
+        if(this._initilized === false){
+            container = document.getElementById(this._options.container.value);
+            if(container === null){
+                throw new Error(`Can't find element by id of '${this._options.container.value}'.`);
+            }
+
+            size = this._size(container, this._options.height.value, this._options.width.value);
+            container.innerHTML = `<canvas height="${size.height}" width="${size.width}"></canvas>`;
+            canvas = container.querySelector("canvas");
+            context = canvas.getContext("2d");
+
+            this._initilized = true;
+            this._container = container;
+            this._context = context;
+        }
+    }
+
     /**
      * 
      * @constructor
@@ -151,10 +229,12 @@ export default class Canvas{
     }
 
     draw(){
-        // TODO IMPLEMENTION
+        this._init();
     }
     
     delete(){
         // TODO IMPLEMENTION
     }
 }
+
+export default Canvas;
