@@ -70,8 +70,6 @@ export class Canvas{
 
     _data = {};
 
-    _initilized = false;
-
     _container = null;
     
     _context = null;
@@ -178,7 +176,7 @@ export class Canvas{
         var context;
         var size;
 
-        if(this._initilized === false){
+        if(this._container === null){
             container = document.getElementById(this._options.container.value);
             if(container === null){
                 throw new Error(`Can't find element by id of '${this._options.container.value}'.`);
@@ -189,7 +187,6 @@ export class Canvas{
             canvas = container.querySelector("canvas");
             context = canvas.getContext("2d");
 
-            this._initilized = true;
             this._container = container;
             this._context = context;
         }
@@ -221,7 +218,13 @@ export class Canvas{
     // PUBLIC METHODS
 
     destroy(){
-        // TODO IMPLEMENTION
+        if(this._container !== null){
+            this._container.innerHTML = '';
+
+            this._container = null;
+            this._context = null;            
+        }
+
     }
 
     add(){
@@ -230,6 +233,8 @@ export class Canvas{
 
     draw(){
         this._init();
+
+        // TODO IMPLEMENTION
     }
     
     delete(){
