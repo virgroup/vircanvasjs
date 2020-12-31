@@ -1,10 +1,10 @@
 /**
- * VirCanvas class
+ * Canvas class
  */
 
-import { virProxyHandler, virValidator, virIsStrictObject } from "./utils";
+import { proxyHandler, validator, isStrictObject } from "./utils";
 
-class VirCanvas{
+export default class Canvas{
     // PRIVATE PARAMETERS
     _options_validations = {
         container: {
@@ -66,8 +66,8 @@ class VirCanvas{
      */
     constructor(options){
         
-        if(virIsStrictObject(options)){
-            options = virValidator(options, this._options_validations);
+        if(isStrictObject(options)){
+            options = validator(options, this._options_validations);
             if(options){
                 this._options = options;
             }else{
@@ -77,7 +77,7 @@ class VirCanvas{
             throw new TypeError("'options' must be a object");
         }
 
-        return new Proxy(this, virProxyHandler());
+        return new Proxy(this, proxyHandler());
     }
 
     // PRIVATE METHODS
@@ -100,5 +100,3 @@ class VirCanvas{
         // TODO IMPLEMENTION
     }
 }
-
-export default VirCanvas;

@@ -1,16 +1,16 @@
 /**
- * VirAbstract Class
+ * AbstractClass
  * 
  * @abstract
  */
 
-class VirAbstractClass{
+export class AbstractClass{
     /**
      * @param {Class} _constructor
      * @constructor
      */
     constructor(_constructor){
-        if((this.prototype === VirAbstractClass || this.__proto__.constructor === VirAbstractClass) ||
+        if((this.prototype === AbstractClass || this.__proto__.constructor === AbstractClass) ||
             (_constructor !== undefined && this.prototype === _constructor ||
                 this.__proto__.constructor == _constructor)){
             throw new Error("Can't instantiate abstract class!");
@@ -18,4 +18,4 @@ class VirAbstractClass{
     }
 }
 
-export default VirAbstractClass;
+export {AbstractClass as default};

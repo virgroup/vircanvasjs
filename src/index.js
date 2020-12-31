@@ -1,7 +1,11 @@
-import VirCanvas from "./lib/vir_canvas";
+import Canvas from "./lib/canvas";
 
 if (typeof window !== 'undefined') {
-    window.VirCanvas = VirCanvas;
+    var virCanvas = {
+        create: Canvas
+    };
+
+    window.VirCanvas = virCanvas;
 }
 
-export default VirCanvas;
+export default Canvas;

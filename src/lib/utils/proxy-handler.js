@@ -1,7 +1,6 @@
 /**
- * VirProxy function
+ * proxyHandler function
  * 
- * @abstract
  */
 
 function _invariant(property, action) {
@@ -12,7 +11,7 @@ function _invariant(property, action) {
     return true;
 }
 
-function virProxyHandler(){
+export function proxyHandler(){
     return {
         apply: function(target, self, args){
             var r = null;
@@ -181,4 +180,4 @@ function virProxyHandler(){
     };
 };
 
-export default virProxyHandler;
+export {proxyHandler as default};

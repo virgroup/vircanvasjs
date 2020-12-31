@@ -1,7 +1,7 @@
 "use strict";
 
-import virIsStrictObject from "./vir_is_strict_object";
-import virInTypes from "./vir_in_types";
+import {isStrictObject} from "./object";
+import hasTypes from "./has-types";
 
 /**
  * 
@@ -12,14 +12,14 @@ import virInTypes from "./vir_in_types";
  * @return {Object, Boolean}
  * @description return valid data if 'data' is valid, else false
  */
-function virValidator(data, validator, _throw=false){
+export function validator(data, validator, _throw=false){
     var result = false;
     var des;
     var in_type;
     var value;
     var t_value;
 
-    if(virIsStrictObject(data) && virIsStrictObject(validator)){
+    if(isStrictObject(data) && isStrictObject(validator)){
         result = {};
         for(var key in validator){
             des = validator[key];
@@ -33,14 +33,14 @@ function virValidator(data, validator, _throw=false){
             switch(typeof des){
                 case "string":
                     if(data.hasOwnProperty(key)){
-                        in_type = virInTypes(data[key], des);
+                        in_type = hasTypes(data[key], des);
                         value.type = des;
                     }
 
                     break;
                 case "function":
                     if(data.hasOwnProperty(key)){
-                        in_type = virInTypes(data[key], des);
+                        in_type = hasTypes(data[key], des);
                         value.type = des;
                     }
 
@@ -53,12 +53,12 @@ function virValidator(data, validator, _throw=false){
                             switch(typeof t){
                                 case "string":
                                     if(data.hasOwnProperty(key)){
-                                        in_type = virInTypes(data[key], t);
+                                        in_type = hasTypes(data[key], t);
                                     }
                                     break;
                                 case "function":
                                     if(data.hasOwnProperty(key)){
-                                        in_type = virInTypes(data[key], t);
+                                        in_type = hasTypes(data[key], t);
                                     }
                                     break;
                                 case null:
@@ -76,7 +76,7 @@ function virValidator(data, validator, _throw=false){
                         value.type = des.hasOwnProperty('type') ? des.type : null;
 
                         if(data.hasOwnProperty(key)){
-                            in_type = virInTypes(data[key], value.type);
+                            in_type = hasTypes(data[key], value.type);
                             if(in_type){
                                 if(typeof des.validator === "function"){
                                     if(des.validator(data[key])){
@@ -89,7 +89,7 @@ function virValidator(data, validator, _throw=false){
                             }
                         }else if(des.hasOwnProperty('default') && des.default !== undefined){
                             value.value = des.default;
-                            in_type = virInTypes(value.value, value.type);
+                            in_type = hasTypes(value.value, value.type);
                         }else if(des.require === true){
                             throw new Error(`'${key}' is required.`);
                         }
@@ -118,4 +118,4 @@ function virValidator(data, validator, _throw=false){
     return result;
 }
 
-export default virValidator; 
+export {validator as default};

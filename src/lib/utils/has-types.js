@@ -8,7 +8,7 @@
  * @return {Boolean}
  * @description return true if 'value' is in 'types' or 'types' is null
  */
-function virInTypes(value, types=null){
+export function hasTypes(value, types=null){
     var result = false;
     var t_value = typeof value;
     var t_type;
@@ -88,4 +88,4 @@ function virInTypes(value, types=null){
     return result;
 }
 
-export default virInTypes;
+export {hasTypes as default};
