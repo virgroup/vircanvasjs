@@ -63,7 +63,7 @@ export class Line extends PathAbstract{
         var result = {
             type: "line",
             from: this._options.from && this._options.from.value,
-            to: this._options.to && this._options.to.value,
+            to: this._options.to.value,
             strokeStyle: this._options.strokeStyle && this._options.strokeStyle.value,
             lineCap: this._options.lineCap && this._options.lineCap.value,
             lineWidth: this._options.lineWidth && this._options.lineWidth.value,
