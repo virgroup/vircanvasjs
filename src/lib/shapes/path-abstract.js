@@ -1,4 +1,4 @@
-import {ProxyAbstarct, isColorString, validator} from "../utils";
+import {ProxyAbstract, isColorString, validator} from "../utils";
 
 let basis_entity_id = 0;
 /**
@@ -6,7 +6,7 @@ let basis_entity_id = 0;
  * PathAbstract class
  * @abstract
  */
-export class PathAbtract extends ProxyAbstarct{
+export class PathAbtract extends ProxyAbstract{
     // RRIVATE PROPERTIES
     _entity_id = 0;
     _share_options_validations = {

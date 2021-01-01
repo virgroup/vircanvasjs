@@ -2,10 +2,10 @@ import proxyHandler from "./proxy-handler";
 
 /**
  * 
- * ProxyAbstarct class
+ * ProxyAbstract class
  * @abstract
  */
-export class ProxyAbstarct{
+export class ProxyAbstract{
     // PROXY PROPERTIES
     _data = {};
     _options = {};
@@ -79,10 +79,10 @@ export class ProxyAbstarct{
      * @constructor
      */
     constructor(){
-        if(new.target === ProxyAbstarct){
+        if(new.target === ProxyAbstract){
             throw new TypeError("Can't instantiate abstract class!");
         }
     }
 }
 
-export default ProxyAbstarct;
+export default ProxyAbstract;
