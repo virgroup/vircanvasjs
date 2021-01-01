@@ -120,4 +120,4 @@ export function validator(data, validator, _throw=false){
     return result;
 }
 
-export {validator as default};
+export default validator;

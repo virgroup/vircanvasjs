@@ -18,4 +18,4 @@ export class AbstractClass{
     }
 }
 
-export {AbstractClass as default};
+export default AbstractClass;

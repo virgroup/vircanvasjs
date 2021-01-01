@@ -184,4 +184,4 @@ export function proxyHandler(){
     };
 };
 
-export {proxyHandler as default};
+export default proxyHandler;
