@@ -14,12 +14,12 @@ export class ProxyAbstarct{
     _get(property){
         var value = undefined;
 
-        if(this._options.hasOwnProperty(property)){
+        if(this.hasOwnProperty(property) || typeof this[property] === "function"){
+            value = this[property];
+        }else if(this._options.hasOwnProperty(property)){
             value = this._options[property].value;
         }else if(this._data.hasOwnProperty(property)){
             value = this._data[property];
-        }else if(typeof this[property] === "function"){
-            value = this[property];
         }
 
         return value;
@@ -42,6 +42,8 @@ export class ProxyAbstarct{
             }else{
                 throw new Error("Can't set imutable property");
             }
+        }else if(this.hasOwnProperty(property) && this[property] !== "function"){
+            result = this[property] = value;
         }else{
             result = this._data[property] = value;
         }
