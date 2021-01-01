@@ -46,18 +46,18 @@ export class Circle extends PathAbstract{
             mutable: false,
             require: true,
             default: 0,
-            validator: function(value){
-                return value > 0 && !isNaN(value) && isFinite(value);
-            }
         },
         endAngle: {
             typeof: Number,
             mutable: false,
             require: true,
             default: Math.PI * 2,
-            validator: function(value){
-                return value > 0 && !isNaN(value) && isFinite(value);
-            }
+        },
+        fullMode:{
+            typeof: Boolean,
+            mutable: false,
+            require: true,
+            default: false,
         }
     };
 
@@ -82,6 +82,7 @@ export class Circle extends PathAbstract{
             clockwise: this._options.clockwise.value,
             startAngle: this._options.startAngle.value,
             endAngle: this._options.endAngle.value,
+            fullMode: this._options.fullMode.value,
             strokeStyle: this._options.strokeStyle && this._options.strokeStyle.value,
             fillStyle: this._options.fillStyle && this._options.fillStyle.value,
             lineCap: this._options.lineCap && this._options.lineCap.value,

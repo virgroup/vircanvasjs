@@ -213,16 +213,17 @@ class Canvas extends ProxyAbstract{
         if(typeof d_obj.endAngle !== "number"){
             throw new TypeError("'endAngle' parameter of circle path is invalid");
         }
-
-        console.log(d_obj);
+        
         d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle: d_obj.strokeStyle;
         d_obj.fillStyle = typeof d_obj.fillStyle === "undefined" ? ctx_p.fillStyle: d_obj.fillStyle;
         d_obj.lineCap = typeof d_obj.strokeStyle === "undefined" ? ctx_p.lineCap: d_obj.lineCap;
         d_obj.lineWidth = typeof d_obj.lineWidth === "undefined" ? ctx_p.lineWidth: d_obj.lineWidth;
-        console.log(d_obj);
-
 
         ctx.beginPath();
+        if(d_obj.fullMode){
+            ctx.moveTo(d_obj.center.x, d_obj.center.y);
+        }
+        
         ctx.arc(d_obj.center.x, d_obj.center.y, d_obj.radius, d_obj.startAngle, d_obj.endAngle, d_obj.clockwise);
         ctx.closePath();
 
