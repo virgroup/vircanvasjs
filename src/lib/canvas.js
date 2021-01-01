@@ -2,9 +2,10 @@
  * Canvas class
  */
 
-import { proxyHandler, validator, isStrictObject, hasTypes } from "./utils";
+import PathAbtract from "./shapes/path-abstract";
+import { ProxyAbstarct, validator, isStrictObject, hasTypes } from "./utils";
 
-export class Canvas{
+class Canvas extends ProxyAbstarct{
     // PRIVATE PARAMETERS
     _options_validations = {
         container: {
@@ -63,75 +64,43 @@ export class Canvas{
                 return value > 0;
             }
         },
-
+        globalAlpha: {
+            type: Number,
+            mutable: false,
+            default: 1.0,
+            validator: function(value){
+                return value >= 0 && value <= 1;
+            }
+        },
+        globalCompositeOperation: {
+            type: String,
+            mutable: false,
+            default: "source-over",
+            validator: function(value){
+                return ["source-over", "source-in", "source-out", "source-atop",
+                        "destination-over", "destination-in", "destination-out", "destination-atop",
+                        "lighter", "copy", "xor", "multiply", "screen", "overlay",
+                        "darken", "lighten", "color-dodge", "color-burn", "hard-light",
+                        "soft-light", "difference", "exclusion", "hue",
+                        "saturation", "color", "luminosity"].includes(value);
+            }
+        },
     };
 
-    _options = {};
-
-    _data = {};
-
     _container = null;
-    
     _context = null;
 
-    // PROXY METHODS
-    _get(property){
-        var value = undefined;
+    _pathes = [];
 
-        if(this._options.hasOwnProperty(property)){
-            value = this._options[property].value;
-        }else if(this._data.hasOwnProperty(property)){
-            value = this._data[property];
-        }else if(typeof this[property] === "function"){
-            value = this[property];
-        }
-
-        return value;
-    }
-
-    _set(property, value){
-        var result = undefined;
-
-        if(this._options.hasOwnProperty(property)){
-            if(this._options[property].mutable){
-                if(hasTypes(value, this._options[property].type)){
-                    if(this._options[property].validator){
-                        result = this._options[property] = value;
-                    }else{
-                        throw new Error("value is invalid value");
-                    }
-                }else{
-                    throw new TypeError("value has invalid type");
-                }
-            }else{
-                throw new Error("Can't set imutable property");
-            }
-        }else{
-            result = this._data[property] = value;
-        }
-
-        return result;
-    }
-
-    _has(property){
-        return this._data.hasOwnProperty(property) || this._options.hasOwnProperty(property);
-    }
-
-    _ownKeys(){
-        return Object.getOwnPropertyNames(this._options).concat(Object.getOwnPropertyNames(this._data));
-    }
-
-    _delete(property){
-        var result = false;
-
-        if(this._data.hasOwnProperty(property)){
-            result = delete this._data[property];
-        }
-
-        return result;
-    }
-
+    _current_context_properties = {
+        cords: {x: 0, y: 0},
+        lineCap: "butt",
+        lineWidth: 1,
+        strokeStyle: "#000",
+        fillStyle: "#000",
+    };
     
+    // PRIVATE METHODS
     _size(container, height, width){
         var th = typeof height;
         var tw = typeof width;
@@ -166,10 +135,9 @@ export class Canvas{
             }
         }
 
-        console.log(height, width);
-        
         return {height: height > 0 ? height : 0, width: width > 0 ? width : 0};
     }
+
     _init(){
         var container;
         var canvas;
@@ -192,13 +160,48 @@ export class Canvas{
         }
     }
 
+    _drow_line(d_obj){
+        var ctx = this._context;
+        var ctx_p = this._current_context_properties;
+
+        if(typeof d_obj.to !== "object" || 
+            (typeof d_obj.to.x !== "number" && typeof d_obj.to.y !== "number")){
+            throw new TypeError("'to' parameter of line path is invalid");
+        }
+
+        d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle: d_obj.strokeStyle;
+        d_obj.fillStyle = typeof d_obj.fillStyle === "undefined" ? ctx_p.fillStyle: d_obj.fillStyle;
+        d_obj.lineCap = typeof d_obj.strokeStyle === "undefined" ? ctx_p.lineCap: d_obj.lineCap;
+        d_obj.lineWidth = typeof d_obj.lineWidth === "undefined" ? ctx_p.lineWidth: d_obj.lineWidth;
+
+
+        ctx.beginPath();
+        ctx.moveTo(d_obj.from.x, d_obj.from.y);
+        ctx.lineTo(d_obj.to.x, d_obj.to.y);
+        ctx.closePath();
+
+        ctx.lineCap = d_obj.lineCap;
+        ctx.lineWidth = d_obj.lineWidth;
+        ctx.strokeStyle = d_obj.strokeStyle;
+        ctx.stroke();
+
+        ctx_p.cords.x = d_obj.to.x;
+        ctx_p.cords.y = d_obj.to.y;
+        ctx_p.lineCap = d_obj.lineCap;
+        ctx_p.lineWidth = d_obj.lineWidth;
+        ctx_p.strokeStyle = d_obj.strokeStyle;
+
+        this._current_context_properties = ctx_p;
+    }
+
     /**
      * 
      * @constructor
      * @param {Object} options
      */
     constructor(options){
-        
+        super();
+
         if(isStrictObject(options)){
             options = validator(options, this._options_validations);
             if(options){
@@ -210,13 +213,12 @@ export class Canvas{
             throw new TypeError("'options' must be a object");
         }
 
-        return new Proxy(this, proxyHandler());
+        return this._proxy();
     }
 
     // PRIVATE METHODS
 
     // PUBLIC METHODS
-
     destroy(){
         if(this._container !== null){
             this._container.innerHTML = '';
@@ -227,18 +229,104 @@ export class Canvas{
 
     }
 
-    add(){
-        // TODO IMPLEMENTION
+    /**
+     * 
+     * @param {PathAbtract} path 
+     * @param {string} name
+     * 
+     * @description add path to pathes list
+     */
+    add(path, name=''){
+        if(path instanceof PathAbtract){
+            if(typeof name !== "string") name = '';
+            this._pathes.push({
+                path: path,
+                name: name,
+                draw: false
+            });
+        }else{
+            throw new TypeError("path must be a PathAbstract");
+        }
     }
 
     draw(){
+        var d_obj; 
+
         this._init();
 
-        // TODO IMPLEMENTION
+        for(var path of this._pathes){
+            if(path.draw === false){
+                path = path.path;
+    
+                d_obj = path.drawObject();
+
+                if(typeof d_obj !== "object"){
+                    throw new TypeError("return type of 'drawObject' must be object");
+                }
+                if(typeof d_obj.type !== "string" && typeof this[`_drow_${d_obj.type}`] === "function"){
+                    throw new TypeError("type of 'drawObject.type' is invalid");
+                }
+
+                if(typeof d_obj.from !== "object" || 
+                    (typeof d_obj.from.x !== "number" && typeof d_obj.from.y !== "number")){
+                    d_obj.from = this._current_context_properties.cords;
+                }
+
+                this._context.save();
+                this[`_drow_${d_obj.type}`](d_obj);
+                this._context.restore();
+            }
+        }
     }
     
-    delete(){
-        // TODO IMPLEMENTION
+    /**
+     * 
+     * @param {PathAbtract, Object} path 
+     * @param {string, Boolean} name
+     * 
+     * name: true -> all groups
+     * name: false -> not global groups
+     * name: '' -> global groups
+     * name: else -> only `name` groups
+     * @description remove path from pathes list
+     */
+    remove(path, name=true){
+        var pathes = [];
+        var fn;
+        var id;
+
+        if(!["string", "boolean"].includes(typeof name)){
+            name = true;
+        }
+
+        if(path === null){
+            if(name === true){
+                pathes = [];
+            }else{
+                if(name === false){
+                    fn = (item) => item.name === '';
+                }else{
+                    fn = (item) => item.name !== name;
+                }
+                pathes = this._pathes.filter(fn);
+            }
+        }else if(path instanceof PathAbtract){
+            var id = path.entityId();
+
+            if(name === true){
+                fn = (item) => item.path.entityId() !== id;
+            }else if(name === false){
+                fn = (item) => item.path.entityId() !== id || item.name === '';
+            }else{
+                fn = (item) => item.path.entityId() !== id || item.name !== name;
+            }
+
+            pathes = this._pathes.filter(fn);
+        }else{
+            throw new TypeError("path must be a PathAbstract");
+        }
+
+        this._pathes = pathes;
     }
 }
 
