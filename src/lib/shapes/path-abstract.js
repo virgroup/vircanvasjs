@@ -1,5 +1,6 @@
 import {ProxyAbstarct, isColorString, validator} from "../utils";
 
+let basis_entity_id = 0;
 /**
  * 
  * PathAbstract class
@@ -7,13 +8,14 @@ import {ProxyAbstarct, isColorString, validator} from "../utils";
  */
 export class PathAbtract extends ProxyAbstarct{
     // RRIVATE PROPERTIES
-    _full_options_validations = {
+    _entity_id = 0;
+    _share_options_validations = {
         fillStyle: {
             type: [String, Object],
             mutable: false,
-            default: "#000",
+            default: "",
             validator: function(value){
-                var r = fasle;
+                var r = false;
 
                 switch(typeof value){
                     case "string":
@@ -45,7 +47,6 @@ export class PathAbtract extends ProxyAbstarct{
         lineCap: {
             type: String,
             mutable: false,
-            default: "butt",
             validator: function(value){
                 return ["butt", "round", "square"].includes(value);
             },
@@ -61,14 +62,13 @@ export class PathAbtract extends ProxyAbstarct{
         lineJoin: {
             type: String,
             mutable: false,
-            default: "miter",
+            default: "",
             validator: function(value){
                 return ["bevel", "round", "miter"].includes(value);
             },
         },
         lineWidth: {
             type: Number,
-            default: 1.0,
             mutable: false,
             validator: function(value){
                 return value > 0 && !isNaN(value) && isFinite(value);
@@ -93,7 +93,7 @@ export class PathAbtract extends ProxyAbstarct{
         shadowColor: {
             type: String,
             mutable: false,
-            default: "#FFF",
+            default: "",
             validator: function(value){
                 return isColorString(value);
             }
@@ -117,9 +117,9 @@ export class PathAbtract extends ProxyAbstarct{
         strokeStyle: {
             type: [String, Object],
             mutable: false,
-            default: "#000",
+            default: "",
             validator: function(value){
-                var r = fasle;
+                var r = false;
 
                 switch(typeof value){
                     case "string":
@@ -141,7 +141,7 @@ export class PathAbtract extends ProxyAbstarct{
             textAlign: {
                 type: String,
                 mutable: false,
-                default: "start",
+                default: "",
                 validator: function(value){
                     return ["left", "right", "center", "start", "end"].includes(value);
                 },
@@ -149,26 +149,13 @@ export class PathAbtract extends ProxyAbstarct{
             textBaseline: {
                 type: String,
                 mutable: false,
-                default: "alphabetic",
+                default: "",
                 validator: function(value){
                     return ["top", "hanging", "middle", "alphabetic", "ideographic", "bottom"].includes(value);
                 },
             },
         },
     };
-
-    // RRIVATE METHODS
-    _validate(options){
-        var op_val = {};
-
-        for(var p of this._options_properties){
-            if(p in this._full_options_validations){
-                op_val[p] = this._full_options_validations[p];
-            }
-        }
-        
-        return validator(options, op_val);
-    }
 
     /**
      * 
@@ -180,7 +167,31 @@ export class PathAbtract extends ProxyAbstarct{
         if(new.target === PathAbtract){
             throw new TypeError("Can't instantiate abstract class!");
         }
-    }    
+
+        this._entity_id = ++basis_entity_id;
+    }
+
+    // RRIVATE METHODS
+    _validate(options){
+        var op_val = {};
+
+        for(var p of this._options_properties){
+            if(p in this._share_options_validations){
+                op_val[p] = this._share_options_validations[p];
+            }
+        }
+        
+        return Object.assign(validator(options, op_val), validator(options, this._options_object));
+    }
+
+    // PUBLIC METHOD
+    entityId(){
+        return this._entity_id;
+    }
+
+    drawObject(){
+        throw new Error("this method is'nt implemented");
+    }
 }
 
 export default PathAbtract;
