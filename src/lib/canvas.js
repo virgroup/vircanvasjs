@@ -3,9 +3,9 @@
  */
 
 import PathAbtract from "./shapes/path-abstract";
-import { ProxyAbstarct, validator, isStrictObject, hasTypes } from "./utils";
+import { ProxyAbstract, validator, isStrictObject } from "./utils";
 
-class Canvas extends ProxyAbstarct{
+class Canvas extends ProxyAbstract{
     // PRIVATE PARAMETERS
     _options_validations = {
         container: {
@@ -160,7 +160,7 @@ class Canvas extends ProxyAbstarct{
         }
     }
 
-    _drow_line(d_obj){
+    _draw_line(d_obj){
         var ctx = this._context;
         var ctx_p = this._current_context_properties;
 
@@ -170,7 +170,6 @@ class Canvas extends ProxyAbstarct{
         }
 
         d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle: d_obj.strokeStyle;
-        d_obj.fillStyle = typeof d_obj.fillStyle === "undefined" ? ctx_p.fillStyle: d_obj.fillStyle;
         d_obj.lineCap = typeof d_obj.strokeStyle === "undefined" ? ctx_p.lineCap: d_obj.lineCap;
         d_obj.lineWidth = typeof d_obj.lineWidth === "undefined" ? ctx_p.lineWidth: d_obj.lineWidth;
 
@@ -190,6 +189,55 @@ class Canvas extends ProxyAbstarct{
         ctx_p.lineCap = d_obj.lineCap;
         ctx_p.lineWidth = d_obj.lineWidth;
         ctx_p.strokeStyle = d_obj.strokeStyle;
+
+        this._current_context_properties = ctx_p;
+    }
+
+    _draw_circle(d_obj){
+        var ctx = this._context;
+        var ctx_p = this._current_context_properties;
+
+        if(typeof d_obj.center !== "object" || 
+            (typeof d_obj.center.x !== "number" && typeof d_obj.center.y !== "number")){
+            throw new TypeError("'center' parameter of circle path is invalid");
+        }
+        
+        if(typeof d_obj.radius !== "number" && typeof d_obj.radius >= 0){
+            throw new TypeError("'radius' parameter of circle path is invalid");
+        }
+        
+        if(typeof d_obj.startAngle !== "number"){
+            throw new TypeError("'startAngle' parameter of circle path is invalid");
+        }
+        
+        if(typeof d_obj.endAngle !== "number"){
+            throw new TypeError("'endAngle' parameter of circle path is invalid");
+        }
+
+        console.log(d_obj);
+        d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle: d_obj.strokeStyle;
+        d_obj.fillStyle = typeof d_obj.fillStyle === "undefined" ? ctx_p.fillStyle: d_obj.fillStyle;
+        d_obj.lineCap = typeof d_obj.strokeStyle === "undefined" ? ctx_p.lineCap: d_obj.lineCap;
+        d_obj.lineWidth = typeof d_obj.lineWidth === "undefined" ? ctx_p.lineWidth: d_obj.lineWidth;
+        console.log(d_obj);
+
+
+        ctx.beginPath();
+        ctx.arc(d_obj.center.x, d_obj.center.y, d_obj.radius, d_obj.startAngle, d_obj.endAngle, d_obj.clockwise);
+        ctx.closePath();
+
+        ctx.lineCap = d_obj.lineCap;
+        ctx.lineWidth = d_obj.lineWidth;
+        ctx.strokeStyle = d_obj.strokeStyle;
+        ctx.stroke();
+
+        ctx.fillStyle = d_obj.fillStyle;
+        ctx.fill();
+
+        ctx_p.lineCap = d_obj.lineCap;
+        ctx_p.lineWidth = d_obj.lineWidth;
+        ctx_p.strokeStyle = d_obj.strokeStyle;
+        ctx_p.fillStyle = d_obj.fillStyle;
 
         this._current_context_properties = ctx_p;
     }
@@ -263,7 +311,7 @@ class Canvas extends ProxyAbstarct{
                 if(typeof d_obj !== "object"){
                     throw new TypeError("return type of 'drawObject' must be object");
                 }
-                if(typeof d_obj.type !== "string" && typeof this[`_drow_${d_obj.type}`] === "function"){
+                if(typeof d_obj.type !== "string" && typeof this[`_draw_${d_obj.type}`] === "function"){
                     throw new TypeError("type of 'drawObject.type' is invalid");
                 }
 
@@ -273,7 +321,7 @@ class Canvas extends ProxyAbstarct{
                 }
 
                 this._context.save();
-                this[`_drow_${d_obj.type}`](d_obj);
+                this[`_draw_${d_obj.type}`](d_obj);
                 this._context.restore();
             }
         }
