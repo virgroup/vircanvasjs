@@ -160,9 +160,8 @@ class Canvas extends ProxyAbstract{
         }
     }
 
-    _draw_line(d_obj){
+    _draw_line(d_obj, ctx_p){
         var ctx = this._context;
-        var ctx_p = this._current_context_properties;
 
         if(typeof d_obj.to !== "object" || 
             (typeof d_obj.to.x !== "number" && typeof d_obj.to.y !== "number")){
@@ -170,32 +169,23 @@ class Canvas extends ProxyAbstract{
         }
 
         d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle: d_obj.strokeStyle;
-        d_obj.lineCap = typeof d_obj.strokeStyle === "undefined" ? ctx_p.lineCap: d_obj.lineCap;
+        d_obj.lineCap = typeof d_obj.lineCap === "undefined" ? ctx_p.lineCap: d_obj.lineCap;
         d_obj.lineWidth = typeof d_obj.lineWidth === "undefined" ? ctx_p.lineWidth: d_obj.lineWidth;
 
-
         ctx.beginPath();
-        ctx.moveTo(d_obj.from.x, d_obj.from.y);
-        ctx.lineTo(d_obj.to.x, d_obj.to.y);
-        ctx.closePath();
-
         ctx.lineCap = d_obj.lineCap;
         ctx.lineWidth = d_obj.lineWidth;
         ctx.strokeStyle = d_obj.strokeStyle;
+        ctx.moveTo(d_obj.from.x, d_obj.from.y);
+        ctx.lineTo(d_obj.to.x, d_obj.to.y);
+        
         ctx.stroke();
 
-        ctx_p.cords.x = d_obj.to.x;
-        ctx_p.cords.y = d_obj.to.y;
-        ctx_p.lineCap = d_obj.lineCap;
-        ctx_p.lineWidth = d_obj.lineWidth;
-        ctx_p.strokeStyle = d_obj.strokeStyle;
-
-        this._current_context_properties = ctx_p;
+        return d_obj;
     }
 
-    _draw_circle(d_obj){
+    _draw_circle(d_obj, ctx_p){
         var ctx = this._context;
-        var ctx_p = this._current_context_properties;
 
         if(typeof d_obj.center !== "object" || 
             (typeof d_obj.center.x !== "number" && typeof d_obj.center.y !== "number")){
@@ -214,33 +204,30 @@ class Canvas extends ProxyAbstract{
             throw new TypeError("'endAngle' parameter of circle path is invalid");
         }
         
-        d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle: d_obj.strokeStyle;
         d_obj.fillStyle = typeof d_obj.fillStyle === "undefined" ? ctx_p.fillStyle: d_obj.fillStyle;
-        d_obj.lineCap = typeof d_obj.strokeStyle === "undefined" ? ctx_p.lineCap: d_obj.lineCap;
-        d_obj.lineWidth = typeof d_obj.lineWidth === "undefined" ? ctx_p.lineWidth: d_obj.lineWidth;
-
         ctx.beginPath();
-        if(d_obj.fullMode){
+        if(d_obj.fullFill){
             ctx.moveTo(d_obj.center.x, d_obj.center.y);
         }
         
         ctx.arc(d_obj.center.x, d_obj.center.y, d_obj.radius, d_obj.startAngle, d_obj.endAngle, d_obj.clockwise);
-        ctx.closePath();
 
-        ctx.lineCap = d_obj.lineCap;
-        ctx.lineWidth = d_obj.lineWidth;
-        ctx.strokeStyle = d_obj.strokeStyle;
-        ctx.stroke();
+        if(d_obj.fullStroke){
+            d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle: d_obj.strokeStyle;
+            d_obj.lineCap = typeof d_obj.strokeStyle === "undefined" ? ctx_p.lineCap: d_obj.lineCap;
+            d_obj.lineWidth = typeof d_obj.lineWidth === "undefined" ? ctx_p.lineWidth: d_obj.lineWidth;
+            
+            ctx.lineCap = d_obj.lineCap;
+            ctx.lineWidth = d_obj.lineWidth;
+            ctx.strokeStyle = d_obj.strokeStyle;
+            ctx.closePath();
+            ctx.stroke();
+        }
 
         ctx.fillStyle = d_obj.fillStyle;
         ctx.fill();
 
-        ctx_p.lineCap = d_obj.lineCap;
-        ctx_p.lineWidth = d_obj.lineWidth;
-        ctx_p.strokeStyle = d_obj.strokeStyle;
-        ctx_p.fillStyle = d_obj.fillStyle;
-
-        this._current_context_properties = ctx_p;
+        return d_obj;
     }
 
     /**
@@ -296,12 +283,18 @@ class Canvas extends ProxyAbstract{
         }else{
             throw new TypeError("path must be a PathAbstract");
         }
+
+        return this;
     }
 
     draw(){
-        var d_obj; 
+        var d_obj;
+        var ctx_p = Object.assign({}, this._current_context_properties);
+        var res;
 
         this._init();
+
+        this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
 
         for(var path of this._pathes){
             if(path.draw === false){
@@ -322,7 +315,12 @@ class Canvas extends ProxyAbstract{
                 }
 
                 this._context.save();
-                this[`_draw_${d_obj.type}`](d_obj);
+                res = this[`_draw_${d_obj.type}`](d_obj, ctx_p);
+                for(var p in ctx_p){
+                    if(typeof res[p] !== "undefined"){
+                        ctx_p[p] = res[p];
+                    }
+                }
                 this._context.restore();
             }
         }
