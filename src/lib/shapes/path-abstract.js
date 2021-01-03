@@ -156,6 +156,7 @@ export class PathAbtract extends ProxyAbstract{
             },
         },
     };
+    _options_properties = [];
 
     /**
      * 
