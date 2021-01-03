@@ -7,12 +7,11 @@ import hasTypes from "./has-types";
  * 
  * @param {Object} @requires data
  * @param {Object} @requires validator
- * @param {Boolean} _throw @default false
  * 
  * @return {Object, Boolean}
  * @description return valid data if 'data' is valid, else false
  */
-export function validator(data, validator, _throw=false){
+export function validator(data, validator){
     var result = false;
     var des;
     var in_type;
@@ -109,7 +108,7 @@ export function validator(data, validator, _throw=false){
                 if(value.value === undefined) value.value = data[key];
 
                 result[key] = value;
-            }else if(in_type === false && _throw){
+            }else if(in_type === false){
                 throw new TypeError(`'${key}' value is invalid type.`);
             }else if(in_type !== -1){
                 result = false;
