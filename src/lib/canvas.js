@@ -168,14 +168,17 @@ class Canvas extends ProxyAbstract{
             throw new TypeError("'to' parameter of line path is invalid");
         }
 
-        d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle: d_obj.strokeStyle;
-        d_obj.lineCap = typeof d_obj.lineCap === "undefined" ? ctx_p.lineCap: d_obj.lineCap;
-        d_obj.lineWidth = typeof d_obj.lineWidth === "undefined" ? ctx_p.lineWidth: d_obj.lineWidth;
+        if(typeof d_obj.from !== "object" || 
+            (typeof d_obj.from.x !== "number" && typeof d_obj.from.y !== "number")){
+            d_obj.from = this._current_context_properties.cords;
+        }
+
+
+        for(var p of ['strokeStyle', 'lineCap', 'lineWidth']){
+            ctx[p] = d_obj.strokeStyle = typeof d_obj[p] === "undefined" ? ctx_p[p]: d_obj[p];
+        }
 
         ctx.beginPath();
-        ctx.lineCap = d_obj.lineCap;
-        ctx.lineWidth = d_obj.lineWidth;
-        ctx.strokeStyle = d_obj.strokeStyle;
         ctx.moveTo(d_obj.from.x, d_obj.from.y);
         ctx.lineTo(d_obj.to.x, d_obj.to.y);
         
@@ -204,7 +207,7 @@ class Canvas extends ProxyAbstract{
             throw new TypeError("'endAngle' parameter of circle path is invalid");
         }
         
-        d_obj.fillStyle = typeof d_obj.fillStyle === "undefined" ? ctx_p.fillStyle: d_obj.fillStyle;
+        ctx.fillStyle = d_obj.fillStyle = typeof d_obj.fillStyle === "undefined" ? ctx_p.fillStyle: d_obj.fillStyle;
         ctx.beginPath();
         if(d_obj.fullFill){
             ctx.moveTo(d_obj.center.x, d_obj.center.y);
@@ -213,19 +216,54 @@ class Canvas extends ProxyAbstract{
         ctx.arc(d_obj.center.x, d_obj.center.y, d_obj.radius, d_obj.startAngle, d_obj.endAngle, d_obj.clockwise);
 
         if(d_obj.fullStroke){
-            d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle: d_obj.strokeStyle;
-            d_obj.lineCap = typeof d_obj.strokeStyle === "undefined" ? ctx_p.lineCap: d_obj.lineCap;
-            d_obj.lineWidth = typeof d_obj.lineWidth === "undefined" ? ctx_p.lineWidth: d_obj.lineWidth;
-            
-            ctx.lineCap = d_obj.lineCap;
-            ctx.lineWidth = d_obj.lineWidth;
-            ctx.strokeStyle = d_obj.strokeStyle;
+            for(var p of ['strokeStyle', 'lineCap', 'lineWidth']){
+                ctx[p] = d_obj.strokeStyle = typeof d_obj[p] === "undefined" ? ctx_p[p]: d_obj[p];
+            }
+
             ctx.closePath();
             ctx.stroke();
         }
-
-        ctx.fillStyle = d_obj.fillStyle;
         ctx.fill();
+
+        return d_obj;
+    }
+    
+    _draw_arc(d_obj, ctx_p){
+        var ctx = this._context;
+
+        if(typeof d_obj.origin !== "object" || 
+            (typeof d_obj.origin.x !== "number" && typeof d_obj.origin.y !== "number")){
+            d_obj.origin = this._current_context_properties.cords;
+        }
+
+        if(typeof d_obj.from !== "object" || 
+            (typeof d_obj.from.x !== "number" && typeof d_obj.from.y !== "number")){
+            throw new TypeError("'to' parameter of line path is invalid");
+        }
+
+        if(typeof d_obj.to !== "object" || 
+            (typeof d_obj.to.x !== "number" && typeof d_obj.to.y !== "number")){
+            throw new TypeError("'to' parameter of line path is invalid");
+        }
+        
+        if(typeof d_obj.radius !== "number" && typeof d_obj.radius >= 0){
+            throw new TypeError("'radius' parameter of circle path is invalid");
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(d_obj.origin.x, d_obj.origin.y);
+        ctx.arcTo(d_obj.from.x, d_obj.from.y, d_obj.to.x, d_obj.to.y, d_obj.radius);
+        
+        for(var p of ['strokeStyle', 'lineCap', 'lineWidth', 'fillStyle']){
+            ctx[p] = d_obj.strokeStyle = typeof d_obj[p] === "undefined" ? ctx_p[p]: d_obj[p];
+        }
+        if(d_obj.fullStroke){
+            ctx.closePath();
+        }
+        ctx.stroke();
+        if(d_obj.fullFill){
+            ctx.fill();
+        }
 
         return d_obj;
     }
@@ -306,11 +344,6 @@ class Canvas extends ProxyAbstract{
                 }
                 if(typeof d_obj.type !== "string" && typeof this[`_draw_${d_obj.type}`] === "function"){
                     throw new TypeError("type of 'drawObject.type' is invalid");
-                }
-
-                if(typeof d_obj.from !== "object" || 
-                    (typeof d_obj.from.x !== "number" && typeof d_obj.from.y !== "number")){
-                    d_obj.from = this._current_context_properties.cords;
                 }
 
                 this._context.save();
