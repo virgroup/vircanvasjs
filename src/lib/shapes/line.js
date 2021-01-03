@@ -12,6 +12,23 @@ export class Line extends PathAbstract{
         from: {
             type: [Object, Array],
             mutable: false,
+            calcValue: function(value){
+                var v = undefined;
+
+                if(isStrictObject(value)){
+                    v = {
+                        x: value.x,
+                        y: value.y
+                    };
+                }else if(Array.isArray(value)){
+                    v = {
+                        x: value[0],
+                        y: value[1]
+                    };
+                }
+
+                return v;
+            },
             validator: function(value){
                 var v = false;
 
@@ -30,6 +47,23 @@ export class Line extends PathAbstract{
             type: [Object, Array],
             mutable: false,
             require: true,
+            calcValue: function(value){
+                var v = undefined;
+
+                if(isStrictObject(value)){
+                    v = {
+                        x: value.x,
+                        y: value.y
+                    };
+                }else if(Array.isArray(value)){
+                    v = {
+                        x: value[0],
+                        y: value[1]
+                    };
+                }
+
+                return v;
+            },
             validator: function(value){
                 var v = false;
 
