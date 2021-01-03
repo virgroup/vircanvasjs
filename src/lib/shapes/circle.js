@@ -13,6 +13,23 @@ export class Circle extends PathAbstract{
             type: [Object, Array],
             mutable: false,
             require: true,
+            calcValue: function(value){
+                var v = undefined;
+
+                if(isStrictObject(value)){
+                    v = {
+                        x: value.x,
+                        y: value.y
+                    };
+                }else if(Array.isArray(value)){
+                    v = {
+                        x: value[0],
+                        y: value[1]
+                    };
+                }
+
+                return v;
+            },
             validator: function(value){
                 var v = false;
 
@@ -53,11 +70,17 @@ export class Circle extends PathAbstract{
             require: true,
             default: Math.PI * 2,
         },
-        fullMode:{
+        fullFill:{
             typeof: Boolean,
             mutable: false,
             require: true,
             default: false,
+        },
+        fullStroke:{
+            typeof: Boolean,
+            mutable: false,
+            require: true,
+            default: true,
         }
     };
 
@@ -82,7 +105,8 @@ export class Circle extends PathAbstract{
             clockwise: this._options.clockwise.value,
             startAngle: this._options.startAngle.value,
             endAngle: this._options.endAngle.value,
-            fullMode: this._options.fullMode.value,
+            fullFill: this._options.fullFill.value,
+            fullStroke: this._options.fullStroke.value,
             strokeStyle: this._options.strokeStyle && this._options.strokeStyle.value,
             fillStyle: this._options.fillStyle && this._options.fillStyle.value,
             lineCap: this._options.lineCap && this._options.lineCap.value,
