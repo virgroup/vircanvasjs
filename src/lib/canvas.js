@@ -2,7 +2,7 @@
  * Canvas class
  */
 
-import PathAbtract from "./shapes/path-abstract";
+import {PathAbtract, CanvasGradient} from "./shapes";
 import { ProxyAbstract, validator, isStrictObject } from "./utils";
 
 class Canvas extends ProxyAbstract{
@@ -173,9 +173,15 @@ class Canvas extends ProxyAbstract{
             d_obj.from = this._current_context_properties.cords;
         }
 
+        d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle : d_obj.strokeStyle;
+        if(d_obj.strokeStyle instanceof CanvasGradient){
+            ctx.strokeStyle = d_obj.strokeStyle.getColor(ctx);
+        }else{
+            ctx.strokeStyle = d_obj.strokeStyle;
+        }
 
-        for(var p of ['strokeStyle', 'lineCap', 'lineWidth']){
-            ctx[p] = d_obj.strokeStyle = typeof d_obj[p] === "undefined" ? ctx_p[p]: d_obj[p];
+        for(var p of ['lineCap', 'lineWidth']){
+            ctx[p] = d_obj[p] = typeof d_obj[p] === "undefined" ? ctx_p[p]: d_obj[p];
         }
 
         ctx.beginPath();
@@ -207,7 +213,12 @@ class Canvas extends ProxyAbstract{
             throw new TypeError("'endAngle' parameter of circle path is invalid");
         }
         
-        ctx.fillStyle = d_obj.fillStyle = typeof d_obj.fillStyle === "undefined" ? ctx_p.fillStyle: d_obj.fillStyle;
+        d_obj.fillStyle = typeof d_obj.fillStyle === "undefined" ? ctx_p.fillStyle: d_obj.fillStyle;
+        if(d_obj.fillStyle instanceof CanvasGradient){
+            ctx.fillStyle = d_obj.fillStyle.getColor(ctx);
+        }else{
+            ctx.fillStyle = d_obj.fillStyle;
+        }
         ctx.beginPath();
         if(d_obj.fullFill){
             ctx.moveTo(d_obj.center.x, d_obj.center.y);
@@ -216,7 +227,14 @@ class Canvas extends ProxyAbstract{
         ctx.arc(d_obj.center.x, d_obj.center.y, d_obj.radius, d_obj.startAngle, d_obj.endAngle, d_obj.clockwise);
 
         if(d_obj.fullStroke){
-            for(var p of ['strokeStyle', 'lineCap', 'lineWidth']){
+            d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle : d_obj.strokeStyle;
+            if(d_obj.strokeStyle instanceof CanvasGradient){
+                ctx.strokeStyle = d_obj.strokeStyle.getColor(ctx);
+            }else{
+                ctx.strokeStyle = d_obj.strokeStyle;
+            }
+
+            for(var p of ['lineCap', 'lineWidth']){
                 ctx[p] = d_obj.strokeStyle = typeof d_obj[p] === "undefined" ? ctx_p[p]: d_obj[p];
             }
 
@@ -253,8 +271,22 @@ class Canvas extends ProxyAbstract{
         ctx.beginPath();
         ctx.moveTo(d_obj.origin.x, d_obj.origin.y);
         ctx.arcTo(d_obj.from.x, d_obj.from.y, d_obj.to.x, d_obj.to.y, d_obj.radius);
+
+        d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle : d_obj.strokeStyle;
+        if(d_obj.strokeStyle instanceof CanvasGradient){
+            ctx.strokeStyle = d_obj.strokeStyle.getColor(ctx);
+        }else{
+            ctx.strokeStyle = d_obj.strokeStyle;
+        }
         
-        for(var p of ['strokeStyle', 'lineCap', 'lineWidth', 'fillStyle']){
+        d_obj.fillStyle = typeof d_obj.fillStyle === "undefined" ? ctx_p.fillStyle : d_obj.fillStyle;
+        if(d_obj.fillStyle instanceof CanvasGradient){
+            ctx.fillStyle = d_obj.fillStyle.getColor(ctx);
+        }else{
+            ctx.fillStyle = d_obj.fillStyle;
+        }
+        
+        for(var p of ['lineCap', 'lineWidth']){
             ctx[p] = d_obj.strokeStyle = typeof d_obj[p] === "undefined" ? ctx_p[p]: d_obj[p];
         }
         if(d_obj.fullStroke){

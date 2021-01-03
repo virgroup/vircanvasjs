@@ -1,4 +1,5 @@
 import {ProxyAbstract, isColorString, validator} from "../utils";
+import CanvasGradient from "./canvas-gradient";
 
 let basis_entity_id = 0;
 /**
@@ -115,7 +116,7 @@ export class PathAbtract extends ProxyAbstract{
             }
         },
         strokeStyle: {
-            type: [String, Object],
+            type: [String, CanvasGradient],
             mutable: false,
             default: "",
             validator: function(value){
