@@ -9,6 +9,7 @@ export class ProxyAbstract{
     // PROXY PROPERTIES
     _data = {};
     _options = {};
+    _proxy_this = null;
 
     // PROXY METHODS
     _get(property){
@@ -71,7 +72,8 @@ export class ProxyAbstract{
 
     // PRIVATE METHODS
     _proxy(){
-        return new Proxy(this, proxyHandler());
+        this._proxy_this = new Proxy(this, proxyHandler());
+        return this._proxy_this;
     }
 
     /**

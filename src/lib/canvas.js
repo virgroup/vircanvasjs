@@ -284,7 +284,7 @@ class Canvas extends ProxyAbstract{
             throw new TypeError("path must be a PathAbstract");
         }
 
-        return this;
+        return this._proxy_this;
     }
 
     draw(){
@@ -293,8 +293,7 @@ class Canvas extends ProxyAbstract{
         var res;
 
         this._init();
-
-        this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
+        this.clear();
 
         for(var path of this._pathes){
             if(path.draw === false){
@@ -324,6 +323,8 @@ class Canvas extends ProxyAbstract{
                 this._context.restore();
             }
         }
+
+        this._proxy_this;
     }
     
     /**
@@ -374,6 +375,14 @@ class Canvas extends ProxyAbstract{
         }
 
         this._pathes = pathes;
+    }
+
+    /**
+     * 
+     * @description clear canvas
+     */
+    clear(){
+        this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
     }
 }
 
