@@ -95,6 +95,10 @@ export function validator(data, validator, _throw=false){
                         }else if(des.require === true){
                             throw new Error(`'${key}' is required.`);
                         }
+
+                        if(typeof des.calcValue === "function"){
+                            value.value = des.calcValue(value.value);
+                        }
                     }
                     break;
                 default:
