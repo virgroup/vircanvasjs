@@ -371,21 +371,28 @@ class Canvas extends ProxyAbstract{
     
                 d_obj = path.drawObject();
 
-                if(typeof d_obj !== "object"){
-                    throw new TypeError("return type of 'drawObject' must be object");
-                }
-                if(typeof d_obj.type !== "string" && typeof this[`_draw_${d_obj.type}`] === "function"){
-                    throw new TypeError("type of 'drawObject.type' is invalid");
+                if(isStrictObject(d_obj)){
+                    d_obj = [d_obj];
+                }else if(!Array.isArray(d_obj)){
+                    throw new TypeError("return type of 'drawObject' must be a object or array of objects");
                 }
 
-                this._context.save();
-                res = this[`_draw_${d_obj.type}`](d_obj, ctx_p);
-                for(var p in ctx_p){
-                    if(typeof res[p] !== "undefined"){
-                        ctx_p[p] = res[p];
+                for(var item of d_obj){
+                    if(typeof item.type !== 'string' || typeof this[`_draw_${item.type}`] !== "function"){
+                        throw new TypeError("type of 'path' is invalid type");
                     }
+                    this._context.save();
+                    
+                    res = this[`_draw_${item.type}`](item, ctx_p);
+                    for(var p in ctx_p){
+                        if(typeof res[p] !== "undefined"){
+                            ctx_p[p] = res[p];
+                        }
+                    }
+    
+                    this._context.restore();
                 }
-                this._context.restore();
+
             }
         }
 
