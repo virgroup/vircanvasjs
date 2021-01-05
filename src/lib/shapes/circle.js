@@ -7,6 +7,7 @@ import PathAbstract from "./path-abstract";
  */
 export class Circle extends PathAbstract{
     // PRIVATE PROPERTIES
+    _type = 'circle';
     _options_properties = ['strokeStyle', 'lineCap', 'lineWidth', 'fillStyle'];
     _options_object = {
         center: {
@@ -97,24 +98,24 @@ export class Circle extends PathAbstract{
     }
 
     // PUBLIC METHODS
-    drawObject(){
-        var result = {
-            type: "circle",
-            center: this._options.center.value,
-            radius: this._options.radius.value,
-            clockwise: this._options.clockwise.value,
-            startAngle: this._options.startAngle.value,
-            endAngle: this._options.endAngle.value,
-            fullFill: this._options.fullFill.value,
-            fullStroke: this._options.fullStroke.value,
-            strokeStyle: this._options.strokeStyle && this._options.strokeStyle.value,
-            fillStyle: this._options.fillStyle && this._options.fillStyle.value,
-            lineCap: this._options.lineCap && this._options.lineCap.value,
-            lineWidth: this._options.lineWidth && this._options.lineWidth.value,
-        };
+    // drawObject(){
+    //     var result = {
+    //         type: "circle",
+    //         center: this._options.center.value,
+    //         radius: this._options.radius.value,
+    //         clockwise: this._options.clockwise.value,
+    //         startAngle: this._options.startAngle.value,
+    //         endAngle: this._options.endAngle.value,
+    //         fullFill: this._options.fullFill.value,
+    //         fullStroke: this._options.fullStroke.value,
+    //         strokeStyle: this._options.strokeStyle && this._options.strokeStyle.value,
+    //         fillStyle: this._options.fillStyle && this._options.fillStyle.value,
+    //         lineCap: this._options.lineCap && this._options.lineCap.value,
+    //         lineWidth: this._options.lineWidth && this._options.lineWidth.value,
+    //     };
 
-        return result;
-    }
+    //     return result;
+    // }
 }
 
 export default Circle;

@@ -7,6 +7,7 @@ import PathAbstract from "./path-abstract";
  */
 export class Line extends PathAbstract{
     // PRIVATE PROPERTIES
+    _type = 'line';
     _options_properties = ['strokeStyle', 'lineCap', 'lineWidth' ];
     _options_object = {
         from: {
@@ -90,20 +91,6 @@ export class Line extends PathAbstract{
         this._options = this._validate(options);
 
         return this._proxy();
-    }
-
-    // PUBLIC METHODS
-    drawObject(){
-        var result = {
-            type: "line",
-            from: this._options.from && this._options.from.value,
-            to: this._options.to.value,
-            strokeStyle: this._options.strokeStyle && this._options.strokeStyle.value,
-            lineCap: this._options.lineCap && this._options.lineCap.value,
-            lineWidth: this._options.lineWidth && this._options.lineWidth.value,
-        };
-
-        return result;
     }
 }
 

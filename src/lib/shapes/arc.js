@@ -7,6 +7,7 @@ import PathAbstract from "./path-abstract";
  */
 export class Arc extends PathAbstract{
     // PRIVATE PROPERTIES
+    _type = 'arc';
     _options_properties = ['strokeStyle', 'lineCap', 'lineWidth', 'fillStyle'];
     _options_object = {
         origin: {
@@ -148,23 +149,23 @@ export class Arc extends PathAbstract{
     }
 
     // PUBLIC METHODS
-    drawObject(){
-        var result = {
-            type: "arc",
-            origin: this._options.origin && this._options.origin.value,
-            from: this._options.from.value,
-            to: this._options.to.value,
-            radius: this._options.radius.value,
-            fullStroke: this._options.fullStroke.value,
-            fullFill: this._options.fullFill.value,
-            strokeStyle: this._options.strokeStyle && this._options.strokeStyle.value,
-            lineCap: this._options.lineCap && this._options.lineCap.value,
-            lineWidth: this._options.lineWidth && this._options.lineWidth.value,
-            fillStyle: this._options.fillStyle && this._options.fillStyle.value,
-        };
+    // drawObject(){
+    //     var result = {
+    //         type: "arc",
+    //         origin: this._options.origin && this._options.origin.value,
+    //         from: this._options.from.value,
+    //         to: this._options.to.value,
+    //         radius: this._options.radius.value,
+    //         fullStroke: this._options.fullStroke.value,
+    //         fullFill: this._options.fullFill.value,
+    //         strokeStyle: this._options.strokeStyle && this._options.strokeStyle.value,
+    //         lineCap: this._options.lineCap && this._options.lineCap.value,
+    //         lineWidth: this._options.lineWidth && this._options.lineWidth.value,
+    //         fillStyle: this._options.fillStyle && this._options.fillStyle.value,
+    //     };
 
-        return result;
-    }
+    //     return result;
+    // }
 }
 
 export default Arc;

@@ -1,4 +1,4 @@
-import {ProxyAbstract, isColorString, validator} from "../utils";
+import {ProxyAbstract, isColorString, validator, isStrictObject} from "../utils";
 import CanvasGradient from "./canvas-gradient";
 
 let basis_entity_id = 0;
@@ -158,6 +158,7 @@ export class PathAbtract extends ProxyAbstract{
         },
     };
     _options_properties = [];
+    _type = '';
 
     /**
      * 
@@ -192,7 +193,18 @@ export class PathAbtract extends ProxyAbstract{
     }
 
     drawObject(){
-        throw new Error("this method is'nt implemented");
+        var options = this._options;
+        var result = {};
+
+        if(typeof this._type === 'string' && isStrictObject(options)){
+            result.type = this._type;
+            for(var name in options){
+                result[name] = options[name] && options[name].value;
+            }
+        }
+
+
+        return result;
     }
 }
 
