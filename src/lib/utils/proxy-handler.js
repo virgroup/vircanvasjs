@@ -182,6 +182,6 @@ export function proxyHandler(){
         }
 
     };
-};
+}
 
 export default proxyHandler;
