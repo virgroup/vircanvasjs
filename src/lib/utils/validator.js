@@ -16,7 +16,6 @@ export function validator(data, validator){
     var des;
     var in_type;
     var value;
-    var t_value;
 
     if(isStrictObject(data) && isStrictObject(validator)){
         result = {};
@@ -32,14 +31,14 @@ export function validator(data, validator){
 
             switch(typeof des){
                 case "string":
-                    if(data.hasOwnProperty(key)){
+                    if(key in data){
                         in_type = hasTypes(data[key], des);
                         value.type = des;
                     }
 
                     break;
                 case "function":
-                    if(data.hasOwnProperty(key)){
+                    if(key in data){
                         in_type = hasTypes(data[key], des);
                         value.type = des;
                     }
@@ -52,17 +51,17 @@ export function validator(data, validator){
                         for(var t of des){
                             switch(typeof t){
                                 case "string":
-                                    if(data.hasOwnProperty(key)){
+                                    if(key in data){
                                         in_type = hasTypes(data[key], t);
                                     }
                                     break;
                                 case "function":
-                                    if(data.hasOwnProperty(key)){
+                                    if(key in data){
                                         in_type = hasTypes(data[key], t);
                                     }
                                     break;
                                 case null:
-                                    if(data.hasOwnProperty(key)){
+                                    if(key in data){
                                         in_type = true;
                                     }
                             }
@@ -73,10 +72,10 @@ export function validator(data, validator){
                         in_type = true;
                         value.type = null;
                     }else{
-                        value.type = des.hasOwnProperty('type') ? des.type : null;
+                        value.type = 'type' in des ? des.type : null;
                         if(typeof des.mutable === "boolean") value.mutable = des.mutable;
 
-                        if(data.hasOwnProperty(key)){
+                        if(key in data){
                             in_type = hasTypes(data[key], value.type);
                             if(in_type){                                
                                 if(typeof des.validator === "function"){
@@ -88,11 +87,13 @@ export function validator(data, validator){
                                     }
                                 }
                             }
-                        }else if(des.hasOwnProperty('default') && des.default !== undefined){
+                        }else if('default' in des && des.default !== undefined){
                             value.value = des.default;
                             in_type = hasTypes(value.value, value.type);
                         }else if(des.require === true){
                             throw new Error(`'${key}' is required.`);
+                        }else{
+                            in_type = true;
                         }
 
                         if(typeof des.calcValue === "function"){
