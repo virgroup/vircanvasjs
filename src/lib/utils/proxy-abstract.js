@@ -1,4 +1,5 @@
 import proxyHandler from "./proxy-handler";
+import hasTypes from "./has-types";
 
 /**
  * 
@@ -15,11 +16,11 @@ export class ProxyAbstract{
     _get(property){
         var value = undefined;
 
-        if(this.hasOwnProperty(property) || typeof this[property] === "function"){
+        if(property in this || typeof this[property] === "function"){
             value = this[property];
-        }else if(this._options.hasOwnProperty(property)){
+        }else if(property in this._options){
             value = this._options[property].value;
-        }else if(this._data.hasOwnProperty(property)){
+        }else if(property in this._data){
             value = this._data[property];
         }
 
@@ -29,7 +30,7 @@ export class ProxyAbstract{
     _set(property, value){
         var result = undefined;
 
-        if(this._options.hasOwnProperty(property)){
+        if(property in this._options){
             if(this._options[property].mutable){
                 if(hasTypes(value, this._options[property].type)){
                     if(this._options[property].validator){
@@ -43,7 +44,7 @@ export class ProxyAbstract{
             }else{
                 throw new Error("Can't set imutable property");
             }
-        }else if(this.hasOwnProperty(property) && this[property] !== "function"){
+        }else if(property in this && this[property] !== "function"){
             result = this[property] = value;
         }else{
             result = this._data[property] = value;
@@ -53,7 +54,7 @@ export class ProxyAbstract{
     }
 
     _has(property){
-        return this._data.hasOwnProperty(property) || this._options.hasOwnProperty(property);
+        return property in this._data || property in this._options;
     }
 
     _ownKeys(){
@@ -63,7 +64,7 @@ export class ProxyAbstract{
     _delete(property){
         var result = false;
 
-        if(this._data.hasOwnProperty(property)){
+        if(property in this._data){
             result = delete this._data[property];
         }
 
