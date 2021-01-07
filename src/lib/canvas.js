@@ -99,6 +99,43 @@ class Canvas extends ProxyAbstract{
         strokeStyle: "#000",
         fillStyle: "#000",
     };
+
+    _validations_path_func = {
+        isPoint : function(name, path, value, ctx_p){
+            if(typeof value === 'undefined' && (name === "from" || name === "origin")){
+                value = ctx_p.cords;
+            }
+
+            if(typeof value !== "object" || (typeof value.x !== "number" && typeof value.y !== "number")){
+                throw new TypeError(`'${name}' parameter of '${path}' path is invalid`);
+            }
+
+            return value;
+        },
+        
+        getColor: function(name, path, value, ctx_p){
+            if(typeof ctx_p !== "undefined" && (typeof value === "undefined" || value === "") && name in ctx_p){
+                value = ctx_p[name];
+            }
+
+            return this._getColor(value);
+        },
+        _: function(name, path, value, ctx_p){
+            if(typeof ctx_p !== "undefined" && (typeof value === "undefined" || value === "") && name in ctx_p){
+                value = ctx_p[name];
+            }
+
+            return value;
+        }
+    };
+
+    _validations_path_options = {
+        to: "isPoint",
+        from: "isPoint",
+        origin: "isPoint",
+        fillStyle: "getColor",
+        strokeStyle: "getColor",
+    };
     
     // PRIVATE METHODS
     _size(container, height, width){
@@ -160,29 +197,20 @@ class Canvas extends ProxyAbstract{
         }
     }
 
-    _draw_line(d_obj, ctx_p){
-        var ctx = this._context;
+    _checkOptionValid(){
 
-        if(typeof d_obj.to !== "object" || 
-            (typeof d_obj.to.x !== "number" && typeof d_obj.to.y !== "number")){
-            throw new TypeError("'to' parameter of line path is invalid");
+    }
+
+    _getColor(color){
+        if(color instanceof CanvasGradient){
+            color = color.getColor(this._context);
         }
 
-        if(typeof d_obj.from !== "object" || 
-            (typeof d_obj.from.x !== "number" && typeof d_obj.from.y !== "number")){
-            d_obj.from = this._current_context_properties.cords;
-        }
+        return color;
+    }
 
-        d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle : d_obj.strokeStyle;
-        if(d_obj.strokeStyle instanceof CanvasGradient){
-            ctx.strokeStyle = d_obj.strokeStyle.getColor(ctx);
-        }else{
-            ctx.strokeStyle = d_obj.strokeStyle;
-        }
-
-        for(var p of ['lineCap', 'lineWidth']){
-            ctx[p] = d_obj[p] = typeof d_obj[p] === "undefined" ? ctx_p[p]: d_obj[p];
-        }
+    _draw_line(ctx, d_obj){
+        var res = {}
 
         ctx.beginPath();
         ctx.moveTo(d_obj.from.x, d_obj.from.y);
@@ -190,35 +218,14 @@ class Canvas extends ProxyAbstract{
         
         ctx.stroke();
 
-        return d_obj;
+        res.cords = d_obj.to;
+
+        return res;
     }
 
-    _draw_circle(d_obj, ctx_p){
-        var ctx = this._context;
+    _draw_circle(ctx, d_obj){
+        var res = {};
 
-        if(typeof d_obj.center !== "object" || 
-            (typeof d_obj.center.x !== "number" && typeof d_obj.center.y !== "number")){
-            throw new TypeError("'center' parameter of circle path is invalid");
-        }
-        
-        if(typeof d_obj.radius !== "number" && typeof d_obj.radius >= 0){
-            throw new TypeError("'radius' parameter of circle path is invalid");
-        }
-        
-        if(typeof d_obj.startAngle !== "number"){
-            throw new TypeError("'startAngle' parameter of circle path is invalid");
-        }
-        
-        if(typeof d_obj.endAngle !== "number"){
-            throw new TypeError("'endAngle' parameter of circle path is invalid");
-        }
-        
-        d_obj.fillStyle = typeof d_obj.fillStyle === "undefined" ? ctx_p.fillStyle: d_obj.fillStyle;
-        if(d_obj.fillStyle instanceof CanvasGradient){
-            ctx.fillStyle = d_obj.fillStyle.getColor(ctx);
-        }else{
-            ctx.fillStyle = d_obj.fillStyle;
-        }
         ctx.beginPath();
         if(d_obj.fullFill){
             ctx.moveTo(d_obj.center.x, d_obj.center.y);
@@ -227,68 +234,26 @@ class Canvas extends ProxyAbstract{
         ctx.arc(d_obj.center.x, d_obj.center.y, d_obj.radius, d_obj.startAngle, d_obj.endAngle, d_obj.clockwise);
 
         if(d_obj.fullStroke){
-            d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle : d_obj.strokeStyle;
-            if(d_obj.strokeStyle instanceof CanvasGradient){
-                ctx.strokeStyle = d_obj.strokeStyle.getColor(ctx);
-            }else{
-                ctx.strokeStyle = d_obj.strokeStyle;
-            }
-
-            for(var p of ['lineCap', 'lineWidth']){
-                ctx[p] = d_obj.strokeStyle = typeof d_obj[p] === "undefined" ? ctx_p[p]: d_obj[p];
-            }
-
             ctx.closePath();
             ctx.stroke();
         }
         ctx.fill();
 
-        return d_obj;
+        res.cords = {
+            x: d_obj.center.x + d_obj.radius * Math.cos(d_obj.endAngle),
+            y: d_obj.center.y + d_obj.radius * Math.sin(d_obj.endAngle),
+        };
+
+        return res;
     }
     
-    _draw_arc(d_obj, ctx_p){
-        var ctx = this._context;
-
-        if(typeof d_obj.origin !== "object" || 
-            (typeof d_obj.origin.x !== "number" && typeof d_obj.origin.y !== "number")){
-            d_obj.origin = this._current_context_properties.cords;
-        }
-
-        if(typeof d_obj.from !== "object" || 
-            (typeof d_obj.from.x !== "number" && typeof d_obj.from.y !== "number")){
-            throw new TypeError("'to' parameter of line path is invalid");
-        }
-
-        if(typeof d_obj.to !== "object" || 
-            (typeof d_obj.to.x !== "number" && typeof d_obj.to.y !== "number")){
-            throw new TypeError("'to' parameter of line path is invalid");
-        }
-        
-        if(typeof d_obj.radius !== "number" && typeof d_obj.radius >= 0){
-            throw new TypeError("'radius' parameter of circle path is invalid");
-        }
+    _draw_arc(ctx, d_obj){
+        var res = {};
 
         ctx.beginPath();
         ctx.moveTo(d_obj.origin.x, d_obj.origin.y);
         ctx.arcTo(d_obj.from.x, d_obj.from.y, d_obj.to.x, d_obj.to.y, d_obj.radius);
 
-        d_obj.strokeStyle = typeof d_obj.strokeStyle === "undefined" ? ctx_p.strokeStyle : d_obj.strokeStyle;
-        if(d_obj.strokeStyle instanceof CanvasGradient){
-            ctx.strokeStyle = d_obj.strokeStyle.getColor(ctx);
-        }else{
-            ctx.strokeStyle = d_obj.strokeStyle;
-        }
-        
-        d_obj.fillStyle = typeof d_obj.fillStyle === "undefined" ? ctx_p.fillStyle : d_obj.fillStyle;
-        if(d_obj.fillStyle instanceof CanvasGradient){
-            ctx.fillStyle = d_obj.fillStyle.getColor(ctx);
-        }else{
-            ctx.fillStyle = d_obj.fillStyle;
-        }
-        
-        for(var p of ['lineCap', 'lineWidth']){
-            ctx[p] = d_obj.strokeStyle = typeof d_obj[p] === "undefined" ? ctx_p[p]: d_obj[p];
-        }
         if(d_obj.fullStroke){
             ctx.closePath();
         }
@@ -297,7 +262,9 @@ class Canvas extends ProxyAbstract{
             ctx.fill();
         }
 
-        return d_obj;
+        res.cords = d_obj.origin;
+
+        return res;
     }
 
     /**
@@ -358,12 +325,19 @@ class Canvas extends ProxyAbstract{
     }
 
     draw(){
-        var d_obj;
+        var vpo = this._validations_path_options;
+        var vpf = this._validations_path_func;
+        var func;
+
+        var ctx;
         var ctx_p = Object.assign({}, this._current_context_properties);
+        var d_obj;
         var res;
 
         this._init();
         this.clear();
+
+        ctx = this._context;
 
         for(var path of this._pathes){
             if(path.draw === false){
@@ -381,16 +355,33 @@ class Canvas extends ProxyAbstract{
                     if(typeof item.type !== 'string' || typeof this[`_draw_${item.type}`] !== "function"){
                         throw new TypeError("type of 'path' is invalid type");
                     }
-                    this._context.save();
-                    
-                    res = this[`_draw_${item.type}`](item, ctx_p);
-                    for(var p in ctx_p){
-                        if(typeof res[p] !== "undefined"){
-                            ctx_p[p] = res[p];
+                    ctx.save();
+
+                    for(var p in item){
+                        if(p in vpo && vpo[p] in vpf){
+                            func = vpf[vpo[p]];
+                        }else{
+                            func = vpf['_'];
+                        }
+                        
+                        item[p] = func.call(this, p, item.type, p in item ? item[p] : undefined, ctx_p);
+
+                        if(p in ctx_p){
+                            ctx_p[p] = item[p];
+                            ctx[p] = item[p];
                         }
                     }
-    
-                    this._context.restore();
+                    
+                    res = this[`_draw_${item.type}`](ctx, item);
+                    if(isStrictObject(res)){
+                        for(var _p in Object.assign({}, res)){
+                            if(_p in ctx_p){
+                                ctx_p[_p] = res[_p];
+                            }
+                        }
+                    }
+
+                    ctx.restore();
                 }
 
             }
@@ -431,7 +422,7 @@ class Canvas extends ProxyAbstract{
                 pathes = this._pathes.filter(fn);
             }
         }else if(path instanceof PathAbtract){
-            var id = path.entityId();
+            id = path.entityId();
 
             if(name === true){
                 fn = (item) => item.path.entityId() !== id;
