@@ -143,6 +143,9 @@ class Canvas extends ProxyAbstract{
     _validations_path_options = {
         to: "isPoint",
         from: "isPoint",
+        firstControlPoint: "isPoint",
+        secondControlPoint: "isPoint",
+        controlPoint: "isPoint",
         origin: "isPoint",
         fillStyle: "getColor",
         strokeStyle: "getColor",
@@ -223,10 +226,7 @@ class Canvas extends ProxyAbstract{
     _draw_line(ctx, d_obj){
         var res = {}
 
-        console.log(d_obj);
         ctx.beginPath();
-        // ctx.shadowColor = d_obj.shadowColor;
-        // ctx.shadowBlur = d_obj.shadowBlur;
         ctx.setLineDash(d_obj.lineDash);
         ctx.lineDashOffset = d_obj.lineDashOffset;
         ctx.moveTo(d_obj.from.x, d_obj.from.y);
@@ -355,6 +355,20 @@ class Canvas extends ProxyAbstract{
         }
 
         res.cords = to;
+
+        return res;
+    }
+
+    _draw_beziercurve(ctx, d_obj){
+        var res = {};
+
+        ctx.beginPath();
+        ctx.moveTo(d_obj.from.x, d_obj.from.y);
+        ctx.bezierCurveTo(d_obj.firstControlPoint.x, d_obj.firstControlPoint.y, 
+            d_obj.secondControlPoint.x, d_obj.secondControlPoint.y, d_obj.to.x, d_obj.to.y);
+        ctx.stroke();
+
+        res.cords = d_obj.to;
 
         return res;
     }
