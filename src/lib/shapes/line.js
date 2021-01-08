@@ -8,7 +8,7 @@ import PathAbstract from "./path-abstract";
 export class Line extends PathAbstract{
     // PRIVATE PROPERTIES
     _type = 'line';
-    _options_properties = ['strokeStyle', 'lineCap', 'lineWidth', 'lineJoin', 'miterLimit' ];
+    _options_properties = ['strokeStyle', 'lineCap', 'lineWidth', 'lineJoin', 'miterLimit'];
     _options_object = {
         from: {
             type: [Object, Array],
