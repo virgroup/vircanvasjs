@@ -92,6 +92,11 @@ class Canvas extends ProxyAbstract{
 
     _pathes = [];
 
+    _share_context_properties = [
+        'lineCap', 'lineWidth', 'strokeStyle', 'fillStyle', 'shadowBlur', 'shadowColor', 'shadowOffsetX',
+        'shadowOffsetY'
+    ];
+
     _current_context_properties = {
         cords: {x: 0, y: 0},
         lineCap: "butt",
@@ -218,7 +223,10 @@ class Canvas extends ProxyAbstract{
     _draw_line(ctx, d_obj){
         var res = {}
 
+        console.log(d_obj);
         ctx.beginPath();
+        // ctx.shadowColor = d_obj.shadowColor;
+        // ctx.shadowBlur = d_obj.shadowBlur;
         ctx.setLineDash(d_obj.lineDash);
         ctx.lineDashOffset = d_obj.lineDashOffset;
         ctx.moveTo(d_obj.from.x, d_obj.from.y);
@@ -387,6 +395,7 @@ class Canvas extends ProxyAbstract{
 
         var ctx;
         var ctx_p = Object.assign({}, this._current_context_properties);
+        var ctx_share = this._share_context_properties;
         var d_obj;
         var res;
 
@@ -422,10 +431,13 @@ class Canvas extends ProxyAbstract{
                         
                         item[p] = func.call(this, p, item.type, p in item ? item[p] : undefined, ctx_p);
 
-                        if(p in ctx_p){
-                            ctx_p[p] = item[p];
+                        if(ctx_share.includes(p)){
                             ctx[p] = item[p];
                         }
+                        if(p in ctx_p){
+                            ctx_p[p] = item[p];
+                        }
+
                     }
                     
                     res = this[`_draw_${item.type}`](ctx, item);

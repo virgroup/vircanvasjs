@@ -157,6 +157,7 @@ export class PathAbtract extends ProxyAbstract{
             },
         },
     };
+    _share_options_properties = ['shadowColor', 'shadowBlur', 'shadowOffsetX', 'shadowOffsetY'];
     _options_properties = [];
     _type = '';
 
@@ -177,8 +178,15 @@ export class PathAbtract extends ProxyAbstract{
     // RRIVATE METHODS
     _validate(options){
         var op_val = {};
+        var p;
 
-        for(var p of this._options_properties){
+        for(p of this._share_options_properties){
+            if(p in this._share_options_validations){
+                op_val[p] = this._share_options_validations[p];
+            }
+        }
+        
+        for(p of this._options_properties){
             if(p in this._share_options_validations){
                 op_val[p] = this._share_options_validations[p];
             }
