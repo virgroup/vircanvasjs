@@ -275,6 +275,7 @@ class Canvas extends ProxyAbstract{
 
     _draw_rect(ctx, d_obj){
         var res = {};
+        var invalid = true;
         var from;
         var to;
         var height;
@@ -290,12 +291,18 @@ class Canvas extends ProxyAbstract{
                 x: from.x + width,
                 y: from.y + height
             };
+
+            invalid = false;
         }else if('to' in d_obj && this._isPoint(d_obj.to)){
             to = d_obj.to;
             height = to.y - from.y;    
             width = to.x - from.x;
-        }else{
-            throw new TypeError("Some options to draw rect is mission");
+
+            invalid = false;
+        }
+        
+        if(invalid || (this._options.fullFill === false && this._options.fullStroke === false)){
+            throw new TypeError("Some options to draw rect is missing");
         }
 
         ctx.beginPath();

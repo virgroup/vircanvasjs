@@ -119,8 +119,8 @@ export class Rect extends PathAbstract{
             invalid = false;
         }
 
-        if(invalid){
-            throw new TypeError("Some options to draw rect is mission");
+        if(invalid || (this._options.fullFill === false && this._options.fullStroke === false)){
+            throw new TypeError("Some options to draw rect is missing");
         }
 
         return this._proxy();
