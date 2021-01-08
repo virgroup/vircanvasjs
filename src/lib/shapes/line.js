@@ -8,7 +8,7 @@ import PathAbstract from "./path-abstract";
 export class Line extends PathAbstract{
     // PRIVATE PROPERTIES
     _type = 'line';
-    _options_properties = ['strokeStyle', 'lineCap', 'lineWidth' ];
+    _options_properties = ['strokeStyle', 'lineCap', 'lineWidth', 'lineJoin', 'miterLimit' ];
     _options_object = {
         from: {
             type: [Object, Array],
@@ -79,6 +79,31 @@ export class Line extends PathAbstract{
                 return v;
             },
         },
+        lineDash: {
+            type: Array,
+            mutable: false,
+            require: true,
+            default: [],
+            validator: function(value){
+                var res = true;
+
+                for(var v of value){
+                    res &&= typeof v === "number" && v >= 0;
+                }
+
+                return res;
+            }
+        },
+        lineDashOffset: {
+            type: Number,
+            mutable: false,
+            require: true,
+            default: 0,
+            // validator: function(value){
+                
+            // }
+        },
+
     };
 
     /**

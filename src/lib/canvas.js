@@ -219,6 +219,8 @@ class Canvas extends ProxyAbstract{
         var res = {}
 
         ctx.beginPath();
+        ctx.setLineDash(d_obj.lineDash);
+        ctx.lineDashOffset = d_obj.lineDashOffset;
         ctx.moveTo(d_obj.from.x, d_obj.from.y);
         ctx.lineTo(d_obj.to.x, d_obj.to.y);
         
