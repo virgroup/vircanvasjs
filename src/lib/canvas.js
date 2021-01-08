@@ -102,11 +102,17 @@ class Canvas extends ProxyAbstract{
 
     _validations_path_func = {
         isPoint : function(name, path, value, ctx_p){
-            if(typeof value === 'undefined' && (name === "from" || name === "origin")){
-                value = ctx_p.cords;
+            var check = true;
+
+            if(typeof value === 'undefined'){
+                if(name === "from" || name === "origin"){
+                    value = ctx_p.cords;
+                }else if(name === "to" && path === "rect"){
+                    check = false;
+                }
             }
 
-            if(typeof value !== "object" || (typeof value.x !== "number" && typeof value.y !== "number")){
+            if(check && !this._isPoint(value)){
                 throw new TypeError(`'${name}' parameter of '${path}' path is invalid`);
             }
 
@@ -197,16 +203,16 @@ class Canvas extends ProxyAbstract{
         }
     }
 
-    _checkOptionValid(){
-
-    }
-
     _getColor(color){
         if(color instanceof CanvasGradient){
             color = color.getColor(this._context);
         }
 
         return color;
+    }
+
+    _isPoint(value){
+        return isStrictObject(value) && (typeof value.x === "number" && typeof value.y === "number");
     }
 
     _draw_line(ctx, d_obj){
@@ -263,6 +269,47 @@ class Canvas extends ProxyAbstract{
         }
 
         res.cords = d_obj.origin;
+
+        return res;
+    }
+
+    _draw_rect(ctx, d_obj){
+        var res = {};
+        var from;
+        var to;
+        var height;
+        var width;
+
+        from = d_obj.from;
+
+        if(typeof d_obj.height === 'number' && typeof d_obj.width === 'number'){
+            height = d_obj.height;
+            width = d_obj.width;
+
+            to = {
+                x: from.x + width,
+                y: from.y + height
+            };
+        }else if('to' in d_obj && this._isPoint(d_obj.to)){
+            to = d_obj.to;
+            height = to.y - from.y;    
+            width = to.x - from.x;
+        }else{
+            throw new TypeError("Some options to draw rect is mission");
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(d_obj.from.x, d_obj.from.y);
+
+        if(d_obj.fullStroke){
+            ctx.strokeRect(from.x, from.y, width, height);
+        }
+        
+        if(d_obj.fullFill){
+            ctx.fillRect(from.x, from.y, width, height);
+        }
+
+        res.cords = to;
 
         return res;
     }
