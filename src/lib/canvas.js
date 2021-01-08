@@ -253,7 +253,35 @@ class Canvas extends ProxyAbstract{
             ctx.closePath();
             ctx.stroke();
         }
-        ctx.fill();
+        if(d_obj.fullFill){
+            ctx.fill();
+        }
+
+        res.cords = {
+            x: d_obj.center.x + d_obj.radius * Math.cos(d_obj.endAngle),
+            y: d_obj.center.y + d_obj.radius * Math.sin(d_obj.endAngle),
+        };
+
+        return res;
+    }
+
+    _draw_ellipse(ctx, d_obj){
+        var res = {};
+
+        ctx.beginPath();
+        if(d_obj.fullFill){
+            ctx.moveTo(d_obj.center.x, d_obj.center.y);
+        }
+        
+        ctx.ellipse(d_obj.center.x, d_obj.center.y, d_obj.radiusX, d_obj.radiusY, d_obj.rotation, d_obj.startAngle, d_obj.endAngle, d_obj.clockwise);
+
+        if(d_obj.fullStroke){
+            ctx.closePath();
+            ctx.stroke();
+        }
+        if(d_obj.fullFill){
+            ctx.fill();
+        }
 
         res.cords = {
             x: d_obj.center.x + d_obj.radius * Math.cos(d_obj.endAngle),

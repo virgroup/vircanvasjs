@@ -3,7 +3,7 @@ import PathAbstract from "./path-abstract";
 
 /**
  * 
- * Line class
+ * Rect class
  */
 export class Rect extends PathAbstract{
     // PRIVATE PROPERTIES
