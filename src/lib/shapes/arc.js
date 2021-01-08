@@ -147,25 +147,6 @@ export class Arc extends PathAbstract{
 
         return this._proxy();
     }
-
-    // PUBLIC METHODS
-    // drawObject(){
-    //     var result = {
-    //         type: "arc",
-    //         origin: this._options.origin && this._options.origin.value,
-    //         from: this._options.from.value,
-    //         to: this._options.to.value,
-    //         radius: this._options.radius.value,
-    //         fullStroke: this._options.fullStroke.value,
-    //         fullFill: this._options.fullFill.value,
-    //         strokeStyle: this._options.strokeStyle && this._options.strokeStyle.value,
-    //         lineCap: this._options.lineCap && this._options.lineCap.value,
-    //         lineWidth: this._options.lineWidth && this._options.lineWidth.value,
-    //         fillStyle: this._options.fillStyle && this._options.fillStyle.value,
-    //     };
-
-    //     return result;
-    // }
 }
 
 export default Arc;
