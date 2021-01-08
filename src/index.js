@@ -1,5 +1,5 @@
 import Canvas from "./lib/canvas";
-import {CanvasGradient, Line, Circle, Arc, Rect, Ellipse, BezierCurve} from "./lib/shapes";
+import {CanvasGradient, Line, Circle, Arc, Rect, Ellipse, BezierCurve, QuadraticCurve} from "./lib/shapes";
 
 if (typeof window !== 'undefined') {
     var virCanvas = {
@@ -10,7 +10,8 @@ if (typeof window !== 'undefined') {
         Arc,
         Rect,
         Ellipse,
-        BezierCurve
+        BezierCurve,
+        QuadraticCurve
     };
 
     window.VirCanvas = virCanvas;

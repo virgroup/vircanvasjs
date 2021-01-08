@@ -372,6 +372,19 @@ class Canvas extends ProxyAbstract{
 
         return res;
     }
+    
+    _draw_quadraticcurve(ctx, d_obj){
+        var res = {};
+
+        ctx.beginPath();
+        ctx.moveTo(d_obj.from.x, d_obj.from.y);
+        ctx.quadraticCurveTo(d_obj.controlPoint.x, d_obj.controlPoint.y, d_obj.to.x, d_obj.to.y);
+        ctx.stroke();
+
+        res.cords = d_obj.to;
+
+        return res;
+    }
 
     /**
      * 
